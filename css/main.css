@@ -1,0 +1,28 @@
+body{
+	background-image:  url(../grey_wash_wall.png);
+	background-repeat: repeat;
+}
+
+.box{
+	width: 50px;
+	height: 50px;
+	background: red;
+	position: relative;
+}
+
+.light{
+	opacity: 0.5;
+}
+
+
+#box2 {
+	width: 50px;
+	height: 50px;
+	font-size: 2em;
+	border: 1px solid orange;
+	border-radius: 25px;
+	background: lightyellow;
+	position: absolute;
+	padding-top: 4px;
+	text-align: center;
+}
