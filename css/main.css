@@ -3,26 +3,39 @@ body{
 	background-repeat: repeat;
 }
 
-.box{
-	width: 50px;
-	height: 50px;
-	background: red;
-	position: relative;
-}
-
-.light{
-	opacity: 0.5;
-}
 
 
-#box2 {
+.box {
 	width: 50px;
 	height: 50px;
 	font-size: 2em;
-	border: 1px solid orange;
-	border-radius: 25px;
-	background: lightyellow;
+	border-radius: 25px;	
 	position: absolute;
 	padding-top: 4px;
 	text-align: center;
+}
+
+.box-mighty-slate {
+	background: #556270;
+}
+
+.box-pacifica {
+	background: #4ECDC4;
+}
+
+.box-apple-chic {
+	background: #C7F464;
+}
+
+.box-cheery-pink {
+	background: #FF6B6B;
+}
+
+.box-grandmas-pillow {
+	background: #C44D58;
+}
+
+.touch{
+	opacity: 0.5;
+	box-shadow: 5px 5px 20px black;
 }

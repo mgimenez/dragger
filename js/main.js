@@ -1,31 +1,68 @@
 (function (win, doc) {
 	'use strict';
 
-	
-	
-	var	dragger = {};
-	
-	dragger.element = doc.getElementById('box2');
-	dragger.boxleft = {}; // left position of moving box
-	dragger.startx = {}; // starting x coordinate of touch point
-	dragger.boxtop = {};
-	dragger.starty = {};
-	dragger.dist = 0; // dragger.distance traveled by touch point
-	dragger.touchobj = null; // Touch object holder
+	var limitWidth = win.screen.width,
+		limitHeight = win.screen.height;
+
+	function Dragger (element) {
+
+		this.element = element;
+		this.lastPositionBoxLeft = 0; // left position of moving box
+		this.lastPositionBoxTop = 0;
+		this.startx = 0; // starting x coordinate of touch point
+		this.starty = 0;
+		this.touchobj = null; // Touch object holder
+
+		var that = this;
+
+		this.element.addEventListener('touchend', function(e){
+			that.element.classList.remove('touch');
+		});
+
+		this.element.addEventListener('touchstart', function(e){
+			that.element.classList.add('touch');
+		});
+
+		this.element.addEventListener('touchstart', function(e){
+			that.touchobj = e.changedTouches[0] // reference first touch point
+			
+			that.lastPositionBoxLeft = parseInt(that.element.style.left) // get left position of box
+			that.lastPositionBoxTop = parseInt(that.element.style.top) // get left position of box
+			
+			that.startx = parseInt(that.touchobj.clientX) // get x coord of touch point
+			that.starty = parseInt(that.touchobj.clientY) // get x coord of touch point
+			
+			e.preventDefault() // prevent default click behavior
+
+		});
+
+		this.element.addEventListener('touchmove', function(e){
+			
+			that.touchobj = e.changedTouches[0] // reference first touch point for this event
+			
+			that.distX = parseInt(that.touchobj.clientX) - that.startx // calculate dragger.dist traveled by touch point
+			that.distY = parseInt(that.touchobj.clientY) - that.starty // calculate dragger.dist traveled by touch point
+				
+			that.calculePosition();
+
+			e.preventDefault()
+
+		});
+	}
 
 
-	function calculePosition(positionBox, dist, limitScreen, offset, sideToMove){
+	Dragger.prototype.calculePosition = function(){
 
 		/**
 		 * Si position + trayecto + offset
 		 * es mayor al ancho de la pantalla 
 		 * me estoy yendo de pista
 		 */
-		
-	 	if (positionBox + dist + offset > limitScreen) { 
+
+	 	if (this.lastPositionBoxLeft + this.distX + this.element.offsetWidth > limitWidth) { 
 	 		
  			//lo posiciono en: scree.width - offset del elemento
-			dragger.element.style[sideToMove] = limitScreen - offset + 'px';
+			this.element.style.left = limitWidth - this.element.offsetWidth + 'px';
 
 		}else{ 
 			
@@ -35,10 +72,10 @@
 			 * me estoy yendo de pista
 			 */
 
-			if(positionBox + dist < 0){
+			if(this.lastPositionBoxLeft + this.distX < 0){
 
 				//Lo dejo en 0						
-				dragger.element.style[sideToMove] = 0 + 'px';
+				this.element.style.left = 0 + 'px';
 
 			} else {
 
@@ -46,46 +83,55 @@
 				 * Muevo libremente
 				 */
 
-		 		dragger.element.style[sideToMove] = positionBox + dist + 'px';
+		 		this.element.style.left = this.lastPositionBoxLeft + this.distX + 'px';
 
 			}
 
 		}
-	}
-	dragger.element.addEventListener('touchend', function(e){
-		dragger.element.style.boxShadow = '';
-		dragger.element.style.opacity = '';
-	}); 
-	dragger.element.addEventListener('touchstart', function(e){
-		dragger.element.style.opacity = '0.5';
-		dragger.element.style.boxShadow = '5px 5px 20px black';
-	})
-	dragger.element.addEventListener('touchstart', function(e){
-		dragger.touchobj = e.changedTouches[0] // reference first touch point
-		
-		dragger.boxleft = parseInt(dragger.element.style.left) // get left position of box
-		dragger.boxtop = parseInt(dragger.element.style.top) // get left position of box
-		
-		dragger.startx = parseInt(dragger.touchobj.clientX) // get x coord of touch point
-		dragger.starty = parseInt(dragger.touchobj.clientY) // get x coord of touch point
-		
-		e.preventDefault() // prevent default click behavior
 
-	})
+		if (this.lastPositionBoxTop + this.distY + this.element.offsetHeight > limitHeight) { 
+	 		
+ 			//lo posiciono en: scree.width - offset del elemento
+			this.element.style.top = limitHeight - this.element.offsetHeight + 'px';
 
-	dragger.element.addEventListener('touchmove', function(e){
-		
-		dragger.touchobj = e.changedTouches[0] // reference first touch point for this event
-		
-		dragger.distX = parseInt(dragger.touchobj.clientX) - dragger.startx // calculate dragger.dist traveled by touch point
-		dragger.distY = parseInt(dragger.touchobj.clientY) - dragger.starty // calculate dragger.dist traveled by touch point
+		}else{ 
 			
-		calculePosition(dragger.boxleft, dragger.distX, win.screen.width, dragger.element.offsetWidth, 'left');
-		calculePosition(dragger.boxtop, dragger.distY, win.screen.height, dragger.element.offsetHeight, 'top');
+			/**
+			 * Si position + trayecto
+			 * es menor a 0 
+			 * me estoy yendo de pista
+			 */
 
-		e.preventDefault()
+			if(this.lastPositionBoxTop + this.distY < 0){
 
-	})
-	win.dragger = dragger;
+				//Lo dejo en 0						
+				this.element.style.top = 0 + 'px';
+
+			} else {
+
+				/**
+				 * Muevo libremente
+				 */
+
+		 		this.element.style.top = this.lastPositionBoxTop + this.distY + 'px';
+
+			}
+
+		}
+
+	}
+
+	win.Dragger = Dragger;
+
+	var boxes = doc.querySelectorAll('.box');
+	var total = boxes.length;
+
+	var i = 0;
+	
+	for (i; i<total; i=i+1){
+		var name = 'dragger-'+i;
+		console.log(name)
+		new Dragger(boxes[i]);
+	}
 
 }(this, this.document));
