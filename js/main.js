@@ -144,6 +144,25 @@
 		Dragger.intances[i] = new Dragger(boxes[i]);
 	}
 
+
+	/**
+	 * create new dragger on touch any box
+	 */
+	track.addEventListener('touchstart', function(e){
+		console.log(e.target.nodeName)
+		if(e.target.nodeName === 'DIV'){
+
+			var box = doc.createElement('div'),
+				color = e.target.className.split(' ')[1];
+
+			box.classList.add('box');
+			box.classList.add(color);
+			track.appendChild(box);
+			new Dragger(box);
+
+		}
+	});
+
 	win.Dragger = Dragger.intances;
 
 }(this, this.document));
