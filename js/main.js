@@ -1,7 +1,9 @@
 (function (win, doc) {
 	'use strict';
 
-	var limitWidth = win.screen.width,
+	var limitWidthInit = 140,//win.screen.width,
+		limitHeightInit = 160,
+		limitWidth = win.screen.width,
 		limitHeight = win.screen.height;
 
 	function Dragger (element) {
@@ -20,10 +22,9 @@
 		});
 
 		this.element.addEventListener('touchstart', function(e){
+			
 			that.element.classList.add('touch');
-		});
 
-		this.element.addEventListener('touchstart', function(e){
 			that.touchobj = e.changedTouches[0] // reference first touch point
 			
 			that.lastPositionBoxLeft = parseInt(that.element.style.left) // get left position of box
@@ -43,15 +44,25 @@
 			that.distX = parseInt(that.touchobj.clientX) - that.startx // calculate dragger.dist traveled by touch point
 			that.distY = parseInt(that.touchobj.clientY) - that.starty // calculate dragger.dist traveled by touch point
 				
-			that.calculePosition();
+			that.calculeMoving();
 
 			e.preventDefault()
 
 		});
+
+		this.initPosition();
+
+	}
+
+	Dragger.prototype.initPosition = function () {
+		this.element.style.top = Math.floor(Math.random() * limitHeightInit) + 0 +'px';
+		this.element.style.left = Math.floor(Math.random() * limitHeightInit) + 0 + 'px';
+		this.startx = this.element.style.top;
+		this.starty = this.element.style.left;
 	}
 
 
-	Dragger.prototype.calculePosition = function(){
+	Dragger.prototype.calculeMoving = function (){
 
 		/**
 		 * Si position + trayecto + offset
@@ -121,17 +132,18 @@
 
 	}
 
-	win.Dragger = Dragger;
 
-	var boxes = doc.querySelectorAll('.box');
-	var total = boxes.length;
+	var boxes = doc.querySelectorAll('.box'),
+		total = boxes.length,
+		track = doc.getElementById('track'),
+		i = 0;
 
-	var i = 0;
-	
+	Dragger.intances = {}
+
 	for (i; i<total; i=i+1){
-		var name = 'dragger-'+i;
-		console.log(name)
-		new Dragger(boxes[i]);
+		Dragger.intances[i] = new Dragger(boxes[i]);
 	}
+
+	win.Dragger = Dragger.intances;
 
 }(this, this.document));
